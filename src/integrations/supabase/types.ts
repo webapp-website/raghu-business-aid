@@ -14,16 +14,154 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          generated_image_url: string | null
+          id: string
+          image_url: string | null
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          generated_image_url?: string | null
+          id?: string
+          image_url?: string | null
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          generated_image_url?: string | null
+          id?: string
+          image_url?: string | null
+          role?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "chat_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_threads: {
+        Row: {
+          created_at: string
+          id: string
+          language: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          preferred_language: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id: string
+          preferred_language?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          preferred_language?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          amount_paise: number
+          created_at: string
+          currency: Database["public"]["Enums"]["currency_type"]
+          expires_at: string
+          id: string
+          plan: Database["public"]["Enums"]["plan_type"]
+          razorpay_order_id: string | null
+          razorpay_payment_id: string | null
+          razorpay_signature: string | null
+          starts_at: string
+          status: Database["public"]["Enums"]["sub_status"]
+          user_id: string
+        }
+        Insert: {
+          amount_paise: number
+          created_at?: string
+          currency: Database["public"]["Enums"]["currency_type"]
+          expires_at: string
+          id?: string
+          plan: Database["public"]["Enums"]["plan_type"]
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          razorpay_signature?: string | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["sub_status"]
+          user_id: string
+        }
+        Update: {
+          amount_paise?: number
+          created_at?: string
+          currency?: Database["public"]["Enums"]["currency_type"]
+          expires_at?: string
+          id?: string
+          plan?: Database["public"]["Enums"]["plan_type"]
+          razorpay_order_id?: string | null
+          razorpay_payment_id?: string | null
+          razorpay_signature?: string | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["sub_status"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_active_subscription: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      currency_type: "INR" | "USD"
+      plan_type: "monthly" | "quarterly" | "premium"
+      sub_status: "active" | "expired" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +288,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      currency_type: ["INR", "USD"],
+      plan_type: ["monthly", "quarterly", "premium"],
+      sub_status: ["active", "expired", "cancelled"],
+    },
   },
 } as const
