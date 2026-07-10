@@ -1,8 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { generateText, Output } from "ai";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { createLovableAiGatewayProvider, requireLovableKey } from "@/lib/ai-gateway.server";
+import { requireLovableKey } from "@/lib/ai-gateway.server";
 
 const RAGHU_SYSTEM_PROMPT = `You are Raghu, an expert AI business consultant for the platform "Launch Business".
 
@@ -129,24 +128,32 @@ const SendMessageInput = z.object({
 });
 
 async function moderateText(prompt: string, apiKey: string): Promise<{ safe: boolean; reason: string }> {
-  const gateway = createLovableAiGatewayProvider(apiKey);
   try {
-    const res = await generateText({
-      model: gateway("google/gemini-3.1-flash-lite"),
-      system:
-        "You are a content moderator. Return JSON only: {\"safe\": boolean, \"reason\": string}. Mark unsafe if the text contains profanity, hate speech, sexual content, threats, self-harm, illegal instructions, or targeted abuse. Constructive business language including strong criticism is safe.",
-      prompt,
-      experimental_output: Output.object({
-        schema: z.object({ safe: z.boolean(), reason: z.string() }),
-      }) as never,
+    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-3.1-flash-lite",
+        messages: [
+          {
+            role: "system",
+            content:
+              'You are a content moderator. Respond with ONLY minified JSON: {"safe":true|false,"reason":"..."}. Mark unsafe if the text contains profanity, hate speech, sexual content, threats, self-harm, illegal instructions, or targeted abuse. Constructive business language including strong criticism is safe.',
+          },
+          { role: "user", content: prompt },
+        ],
+      }),
     });
-    // @ts-expect-error experimental_output attaches object
-    const out = res.experimental_output as { safe: boolean; reason: string } | undefined;
-    if (out) return out;
+    if (!resp.ok) return { safe: true, reason: "" };
+    const j = (await resp.json()) as { choices?: { message?: { content?: string } }[] };
+    const raw = j.choices?.[0]?.message?.content ?? "";
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) return { safe: true, reason: "" };
+    return JSON.parse(match[0]) as { safe: boolean; reason: string };
   } catch (err) {
-    console.error("Text moderation failed, allowing by default", err);
+    console.error("Text moderation failed", err);
+    return { safe: true, reason: "" };
   }
-  return { safe: true, reason: "" };
 }
 
 async function moderateImage(
