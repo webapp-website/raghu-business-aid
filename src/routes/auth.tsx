@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import logoAsset from "@/assets/launch-business-logo.png.asset.json";
 
 type AuthSearch = { redirect?: string };
 
@@ -92,6 +93,16 @@ function AuthPage() {
   return (
     <div className="mx-auto flex w-full max-w-md flex-col px-4 py-16 sm:px-6">
       <div className="rounded-3xl border border-border bg-card p-8 shadow-sm">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <img
+            src={logoAsset.url}
+            alt="Launch Business"
+            className="h-14 w-14 rounded-full object-cover shadow-sm"
+          />
+          <p className="mt-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Launch Business
+          </p>
+        </div>
         <h1 className="text-2xl font-semibold tracking-tight">
           {mode === "signin" ? "Welcome back" : "Create your account"}
         </h1>
