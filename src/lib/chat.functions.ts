@@ -243,17 +243,8 @@ export const sendMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => SendMessageInput.parse(input))
   .handler(async ({ data, context }) => {
-    // Subscription gate
-    const { data: sub, error: subErr } = await context.supabase
-      .from("subscriptions")
-      .select("id")
-      .eq("user_id", context.userId)
-      .eq("status", "active")
-      .gt("expires_at", new Date().toISOString())
-      .limit(1)
-      .maybeSingle();
-    if (subErr) throw new Error(subErr.message);
-    if (!sub) throw new Error("No active subscription. Please subscribe to chat with Raghu.");
+    // Subscription is optional for now — chat is open to all signed-in users.
+
 
     // Verify thread ownership
     const { data: thread, error: tErr } = await context.supabase
