@@ -2,13 +2,16 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import logoAsset from "@/assets/launch-business-logo.png.asset.json";
 
 function BrandMark() {
   return (
     <div className="flex items-center gap-2">
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-google-blue via-google-red to-google-yellow text-white font-bold">
-        L
-      </div>
+      <img
+        src={logoAsset.url}
+        alt="Launch Business logo"
+        className="h-9 w-9 rounded-full object-cover"
+      />
       <div className="flex flex-col leading-none">
         <span className="text-base font-semibold tracking-tight">Launch Business</span>
         <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
