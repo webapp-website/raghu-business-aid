@@ -1,6 +1,6 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { listThreads, createThread } from "@/lib/chat.functions";
+
 import { getActiveSubscription } from "@/lib/razorpay.functions";
 import { Button } from "@/components/ui/button";
 import brandOrb from "@/assets/brand-orb.png.asset.json";
@@ -44,5 +44,3 @@ function UpgradeGate() {
   );
 }
 
-// Ensure useServerFn typing not shaken out
-void useServerFn;
