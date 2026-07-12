@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -15,6 +16,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import { Toaster } from "sonner";
+
 
 function NotFoundComponent() {
   return (
@@ -131,18 +133,21 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isChat = pathname.startsWith("/chat");
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col pb-16 md:pb-0">
-        <SiteHeader />
+      <div className={`flex min-h-screen flex-col ${isChat ? "" : "pb-16 md:pb-0"}`}>
+        {!isChat && <SiteHeader />}
         <main className="flex-1">
           <Outlet />
         </main>
-        <SiteFooter />
-        <MobileBottomNav />
+        {!isChat && <SiteFooter />}
+        {!isChat && <MobileBottomNav />}
       </div>
       <Toaster position="top-center" richColors closeButton />
     </QueryClientProvider>
   );
 }
+

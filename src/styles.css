@@ -90,7 +90,11 @@
   --sidebar-accent-foreground: oklch(0.28 0.03 260);
   --sidebar-border: oklch(0.9 0.005 260);
   --sidebar-ring: oklch(0.62 0.19 258);
+  /* Brand gradient captured from the app icon: deep indigo → magenta → orange → yellow */
+  --brand-gradient: linear-gradient(135deg, #3b1e6e 0%, #7a1f9c 22%, #e0246e 48%, #ff5a2b 74%, #ffc93a 100%);
+  --brand-gradient-soft: linear-gradient(135deg, rgba(59,30,110,0.10) 0%, rgba(224,36,110,0.10) 50%, rgba(255,201,58,0.12) 100%);
 }
+
 
 .dark {
   --background: oklch(0.16 0.01 260);
@@ -150,4 +154,17 @@
     border-radius: 9999px;
     padding-inline: 1.25rem;
   }
+  .brand-gradient-bg {
+    background: var(--brand-gradient);
+  }
+  .brand-gradient-text {
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .brand-gradient-soft-bg {
+    background: var(--brand-gradient-soft);
+  }
 }
+

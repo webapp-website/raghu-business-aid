@@ -20,8 +20,8 @@ export function MobileBottomNav() {
           <li key={to} className="flex-1">
             <Link
               to={to}
-              className="flex flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-              activeProps={{ className: "text-foreground" }}
+              className="mx-auto flex max-w-[92px] flex-col items-center gap-1 rounded-2xl px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "brand-gradient-bg !text-white shadow-md" }}
               activeOptions={{ exact: to === "/" }}
             >
               <Icon className="h-5 w-5" aria-hidden="true" />

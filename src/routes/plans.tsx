@@ -108,11 +108,11 @@ function Plans() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
       <div className="mx-auto max-w-2xl text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Simple, capsule pricing</h1>
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Choose your plan</h1>
         <p className="mt-4 text-muted-foreground">
-          Unlock chat with Raghu, image analysis and AI-generated suggestions. Cancel any time —
-          plans do not auto-renew in test mode.
+          Unlock chat with Raghu, image analysis and AI-generated suggestions.
         </p>
+
         <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-border bg-card p-1">
           {(["INR", "USD"] as CurrencyId[]).map((c) => (
             <button
@@ -175,9 +175,10 @@ function Plans() {
       </div>
 
       <p className="mt-10 text-center text-xs text-muted-foreground">
-        Payments are processed by Razorpay. Currently running in TEST mode — use Razorpay test
-        cards. By subscribing you agree to the terms in the About & Legal page.
+        Payments are securely processed by Razorpay in your account's live mode
+        (based on the API keys configured on the server).
       </p>
+
     </div>
   );
 }
