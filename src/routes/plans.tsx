@@ -175,9 +175,10 @@ function Plans() {
       </div>
 
       <p className="mt-10 text-center text-xs text-muted-foreground">
-        Payments are processed by Razorpay. Currently running in TEST mode — use Razorpay test
-        cards. By subscribing you agree to the terms in the About & Legal page.
+        Payments are securely processed by Razorpay in your account's live mode
+        (based on the API keys configured on the server).
       </p>
+
     </div>
   );
 }
