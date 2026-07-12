@@ -9,7 +9,15 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
-import { Plus, Trash2, Image as ImageIcon, X, MessageSquare } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Paperclip,
+  X,
+  MessageSquare,
+  ArrowLeft,
+  Menu,
+} from "lucide-react";
 
 import {
   listThreads,
@@ -18,6 +26,7 @@ import {
   getThreadMessages,
   sendMessage,
 } from "@/lib/chat.functions";
+import { getActiveSubscription } from "@/lib/razorpay.functions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { LANGUAGES } from "@/lib/constants";
@@ -28,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import brandOrb from "@/assets/brand-orb.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/chat/$threadId")({
   component: ChatPage,
@@ -43,21 +53,32 @@ function ChatPage() {
   const deleteFn = useServerFn(deleteThread);
   const messagesFn = useServerFn(getThreadMessages);
   const sendFn = useServerFn(sendMessage);
+  const subFn = useServerFn(getActiveSubscription);
+
+  const subQ = useQuery({
+    queryKey: ["subscription"],
+    queryFn: () => subFn(),
+    staleTime: 60_000,
+  });
 
   const threadsQ = useQuery({
     queryKey: ["threads"],
     queryFn: () => listFn(),
     staleTime: 10_000,
+    enabled: subQ.data?.active === true,
   });
 
   const msgsQ = useQuery({
     queryKey: ["thread", threadId],
     queryFn: () => messagesFn({ data: { threadId } }),
+    enabled: subQ.data?.active === true,
   });
 
   const [input, setInput] = useState("");
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
+  const [attachedFileName, setAttachedFileName] = useState<string | null>(null);
   const [language, setLanguage] = useState("en");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const listEndRef = useRef<HTMLDivElement>(null);
@@ -82,6 +103,7 @@ function ChatPage() {
     onMutate: () => {
       setInput("");
       setImageDataUrl(null);
+      setAttachedFileName(null);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["thread", threadId] });
@@ -95,11 +117,18 @@ function ChatPage() {
 
   async function handleFile(file: File) {
     if (file.size > 8 * 1024 * 1024) {
-      toast.error("Image too large. Max 8MB.");
+      toast.error("File too large. Max 8MB.");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are supported right now.");
       return;
     }
     const reader = new FileReader();
-    reader.onload = () => setImageDataUrl(String(reader.result));
+    reader.onload = () => {
+      setImageDataUrl(String(reader.result));
+      setAttachedFileName(file.name);
+    };
     reader.readAsDataURL(file);
   }
 
@@ -113,6 +142,7 @@ function ChatPage() {
   async function newThread() {
     const t = await createFn({ data: { language } });
     qc.invalidateQueries({ queryKey: ["threads"] });
+    setSidebarOpen(false);
     navigate({ to: "/chat/$threadId", params: { threadId: t.id } });
   }
 
@@ -130,15 +160,49 @@ function ChatPage() {
     }
   }
 
+  // Subscription gate
+  if (subQ.isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-sm text-muted-foreground">Loading…</div>
+      </div>
+    );
+  }
+  if (subQ.data && !subQ.data.active) {
+    return (
+      <div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6 text-center">
+        <img src={brandOrb.url} alt="" className="h-24 w-24 rounded-full shadow-lg" />
+        <h1 className="mt-6 text-2xl font-semibold">Unlock chat with Raghu</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Choose a plan to start business consulting, image analysis and
+          AI-generated visual suggestions.
+        </p>
+        <Button asChild size="lg" className="mt-6 rounded-full brand-gradient-bg px-8 text-white hover:opacity-90">
+          <Link to="/plans">Upgrade your plan</Link>
+        </Button>
+        <Link to="/" className="mt-4 text-xs text-muted-foreground hover:text-foreground">
+          ← Back home
+        </Link>
+      </div>
+    );
+  }
+
   const messages = msgsQ.data?.messages ?? [];
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-4rem)] w-full max-w-6xl gap-4 px-2 py-4 sm:px-4">
-      {/* Sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col rounded-3xl border border-border bg-sidebar p-3 md:flex">
-        <div className="flex items-center gap-2 px-2 pb-2">
+    <div className="fixed inset-0 flex bg-background">
+      {/* Sidebar (desktop) */}
+      <aside
+        className={`${
+          sidebarOpen ? "flex" : "hidden"
+        } absolute inset-y-0 left-0 z-30 w-72 flex-col border-r border-border bg-sidebar p-3 md:static md:flex md:w-64`}
+      >
+        <div className="flex items-center gap-2 px-1 pb-2">
+          <Link to="/" className="rounded-full p-2 hover:bg-accent" title="Back">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
           <Select value={language} onValueChange={setLanguage}>
-            <SelectTrigger className="h-8 rounded-full text-xs">
+            <SelectTrigger className="h-8 flex-1 rounded-full text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -149,7 +213,7 @@ function ChatPage() {
               ))}
             </SelectContent>
           </Select>
-          <Button size="icon" className="rounded-full" onClick={newThread} title="New chat">
+          <Button size="icon" className="rounded-full brand-gradient-bg text-white hover:opacity-90" onClick={newThread} title="New chat">
             <Plus />
           </Button>
         </div>
@@ -161,13 +225,14 @@ function ChatPage() {
                 key={t.id}
                 className={`group flex items-center gap-1 rounded-full px-2 py-1.5 text-sm transition ${
                   active
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    ? "brand-gradient-bg text-white"
                     : "hover:bg-sidebar-accent/50"
                 }`}
               >
                 <Link
                   to="/chat/$threadId"
                   params={{ threadId: t.id }}
+                  onClick={() => setSidebarOpen(false)}
                   className="flex-1 truncate rounded-full px-2 py-1"
                 >
                   <MessageSquare className="mr-2 inline h-3.5 w-3.5 opacity-60" />
@@ -175,7 +240,7 @@ function ChatPage() {
                 </Link>
                 <button
                   onClick={() => removeThread(t.id)}
-                  className="rounded-full p-1.5 opacity-0 transition group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                  className={`rounded-full p-1.5 opacity-0 transition group-hover:opacity-100 ${active ? "hover:bg-white/20" : "hover:bg-destructive/10 hover:text-destructive"}`}
                   title="Delete"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -185,17 +250,31 @@ function ChatPage() {
           })}
         </div>
       </aside>
+      {sidebarOpen && (
+        <button
+          type="button"
+          aria-label="Close menu"
+          onClick={() => setSidebarOpen(false)}
+          className="absolute inset-0 z-20 bg-black/30 md:hidden"
+        />
+      )}
 
-      {/* Main */}
-      <div className="flex min-w-0 flex-1 flex-col rounded-3xl border border-border bg-card">
-        <div className="flex items-center justify-between border-b border-border px-5 py-3">
-          <div>
-            <h2 className="text-sm font-semibold">
+      {/* Main chat column */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center gap-2 border-b border-border bg-background/95 px-3 py-2 backdrop-blur">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen((v) => !v)}
+            className="rounded-full p-2 hover:bg-accent md:hidden"
+            aria-label="Menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+          <img src={brandOrb.url} alt="" className="h-8 w-8 rounded-full" />
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-sm font-semibold">
               {msgsQ.data?.thread.title || "Chat with Raghu"}
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              AI business consultant · multilingual
-            </p>
+            </div>
           </div>
           <Button
             size="sm"
@@ -205,7 +284,7 @@ function ChatPage() {
           >
             <Plus className="mr-1 h-3.5 w-3.5" /> New
           </Button>
-        </div>
+        </header>
 
         <div className="flex-1 space-y-4 overflow-y-auto px-4 py-6 sm:px-8">
           {messages.length === 0 && !sendM.isPending && (
@@ -215,11 +294,14 @@ function ChatPage() {
             <MessageBubble key={m.id} m={m} />
           ))}
           {sendM.isPending && (
-            <div className="text-sm text-muted-foreground">
-              <span className="inline-flex items-center gap-2">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-google-blue" />
-                Raghu is thinking…
-              </span>
+            <div className="flex items-center gap-3">
+              <img
+                src={brandOrb.url}
+                alt=""
+                className="h-10 w-10 animate-pulse rounded-full shadow-md"
+                style={{ animationDuration: "1.5s" }}
+              />
+              <span className="text-sm text-muted-foreground">Raghu is thinking…</span>
             </div>
           )}
           <div ref={listEndRef} />
@@ -228,14 +310,18 @@ function ChatPage() {
         <form
           onSubmit={handleSubmit}
           className="border-t border-border p-3 sm:p-4"
+          style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
         >
           {imageDataUrl && (
             <div className="mb-2 flex items-center gap-2 rounded-full border border-border bg-secondary px-3 py-1 text-xs">
-              <ImageIcon className="h-3.5 w-3.5" />
-              <span className="truncate">Image attached</span>
+              <Paperclip className="h-3.5 w-3.5" />
+              <span className="truncate">{attachedFileName ?? "File attached"}</span>
               <button
                 type="button"
-                onClick={() => setImageDataUrl(null)}
+                onClick={() => {
+                  setImageDataUrl(null);
+                  setAttachedFileName(null);
+                }}
                 className="ml-auto rounded-full p-1 hover:bg-background"
               >
                 <X className="h-3 w-3" />
@@ -260,9 +346,9 @@ function ChatPage() {
               size="icon"
               className="rounded-full"
               onClick={() => fileInputRef.current?.click()}
-              title="Attach image"
+              title="Attach file"
             >
-              <ImageIcon />
+              <Paperclip />
             </Button>
             <Textarea
               ref={textareaRef}
@@ -280,15 +366,12 @@ function ChatPage() {
             <Button
               type="submit"
               size="sm"
-              className="rounded-full"
+              className="rounded-full brand-gradient-bg text-white hover:opacity-90"
               disabled={sendM.isPending || !input.trim()}
             >
               Send
             </Button>
           </div>
-          <p className="mt-2 text-center text-[10px] text-muted-foreground">
-            Raghu can make mistakes. Verify important decisions.
-          </p>
         </form>
       </div>
     </div>
@@ -303,12 +386,12 @@ function EmptyState({ onPick }: { onPick: (s: string) => void }) {
   ];
   return (
     <div className="mx-auto max-w-lg py-8 text-center">
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-google-blue via-google-red to-google-yellow text-2xl font-bold text-white">
-        R
-      </div>
+      <img src={brandOrb.url} alt="" className="mx-auto mb-4 h-20 w-20 rounded-full shadow-lg" />
       <h3 className="text-lg font-semibold">Hi, I'm Raghu.</h3>
       <p className="mt-1 text-sm text-muted-foreground">
-        Tell me about your business or upload a photo to get started.
+        Tell me your business name, category (online, offline or other) and the
+        problem you want to solve. Upload a photo or share a URL for deeper
+        analysis.
       </p>
       <div className="mt-6 grid gap-2">
         {prompts.map((p) => (
@@ -352,9 +435,7 @@ function MessageBubble({ m }: { m: Msg }) {
   }
   return (
     <div className="flex gap-3">
-      <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-google-blue via-google-red to-google-yellow text-sm font-bold text-white">
-        R
-      </div>
+      <img src={brandOrb.url} alt="" className="mt-1 h-9 w-9 shrink-0 rounded-full shadow-sm" />
       <div className="max-w-[85%] flex-1">
         <div className="prose prose-sm dark:prose-invert max-w-none text-foreground [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_h1]:mt-3 [&_h2]:mt-3 [&_h3]:mt-3">
           <ReactMarkdown>{m.content}</ReactMarkdown>
