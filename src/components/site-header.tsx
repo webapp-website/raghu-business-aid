@@ -56,12 +56,14 @@ export function SiteHeader() {
               key={item.to}
               to={item.to}
               className="rounded-full px-4 py-2 text-sm font-medium text-foreground/80 transition-colors hover:bg-accent hover:text-foreground"
-              activeProps={{ className: "bg-accent text-foreground" }}
+              activeProps={{ className: "brand-gradient-bg !text-white shadow-sm" }}
+              activeOptions={{ exact: item.to === "/" }}
             >
               {item.label}
             </Link>
           ))}
         </nav>
+
 
         <div className="flex items-center gap-2">
           {email ? (
