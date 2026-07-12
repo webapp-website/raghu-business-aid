@@ -246,8 +246,18 @@ export const sendMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => SendMessageInput.parse(input))
   .handler(async ({ data, context }) => {
-    // Subscription is optional for now — chat is open to all signed-in users.
-
+    // Require active subscription before chatting.
+    const { data: activeSub, error: subErr } = await context.supabase
+      .from("subscriptions")
+      .select("id")
+      .eq("user_id", context.userId)
+      .eq("status", "active")
+      .gt("expires_at", new Date().toISOString())
+      .maybeSingle();
+    if (subErr) throw new Error(subErr.message);
+    if (!activeSub) {
+      throw new Error("Subscription required. Please upgrade your plan to chat with Raghu.");
+    }
 
     // Verify thread ownership
     const { data: thread, error: tErr } = await context.supabase
@@ -258,6 +268,7 @@ export const sendMessage = createServerFn({ method: "POST" })
       .maybeSingle();
     if (tErr) throw new Error(tErr.message);
     if (!thread) throw new Error("Thread not found");
+
 
     const apiKey = requireLovableKey();
 
