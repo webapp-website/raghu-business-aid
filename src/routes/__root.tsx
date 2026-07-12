@@ -81,21 +81,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Launch Business — AI Business Consultant" },
+      { title: "Launch Business — Meet Raghu, your AI business consultant" },
       {
         name: "description",
         content:
-          "Chat with Raghu, an AI business consultant. Get visual and text-based strategy, image analysis and AI-generated suggestions in English, తెలుగు, हिंदी, தமிழ் and മലയാളം.",
+          "Raghu analyzes your business, asks the right questions and generates visual and text suggestions to help you launch and grow.",
       },
       { name: "author", content: "Launch Business" },
-      { property: "og:title", content: "Launch Business — AI Business Consultant" },
+      { property: "og:title", content: "Launch Business — Meet Raghu, your AI business consultant" },
       {
         property: "og:description",
         content:
-          "Meet Raghu, your multilingual AI business consultant. Real-world advice, visual analysis and generated suggestions.",
+          "Raghu analyzes your business, asks the right questions and generates visual and text suggestions to help you launch and grow.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Launch Business — Meet Raghu, your AI business consultant" },
+      { name: "twitter:description", content: "Raghu analyzes your business, asks the right questions and generates visual and text suggestions to help you launch and grow." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/45e16f96-fb59-408e-ac91-8a8048b33d0e/id-preview-5b90f442--32723a23-9207-41c5-a828-2b1c6ef1c372.lovable.app-1783839688622.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/45e16f96-fb59-408e-ac91-8a8048b33d0e/id-preview-5b90f442--32723a23-9207-41c5-a828-2b1c6ef1c372.lovable.app-1783839688622.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
