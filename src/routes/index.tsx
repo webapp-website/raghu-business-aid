@@ -18,28 +18,27 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   return (
-    <div>
-      {/* Hero — brand gradient background */}
-      <section className="relative overflow-hidden brand-gradient-bg text-white">
-        <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
+    <div className="bg-background">
+      {/* Hero — plain background, colorful buttons */}
+      <section className="relative overflow-hidden">
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-20 pt-16 text-center sm:px-6 sm:pt-24">
-          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-xs font-medium text-white backdrop-blur">
-            <span className="h-2 w-2 rounded-full bg-white" />
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium text-muted-foreground">
+            <span className="h-2 w-2 rounded-full brand-gradient-bg" />
             AI-powered business consulting
           </span>
           <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
-            Meet Raghu, your AI business consultant.
+            Meet <span className="brand-gradient-text">Raghu</span>, your AI business consultant.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-white/90">
+          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
             Raghu asks the right questions, analyzes photos of your store, product or layout,
             and generates visual and text-based suggestions to help you launch and grow — in
             English, తెలుగు, हिंदी, தமிழ் and മലയാളം.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild size="lg" className="rounded-full bg-white px-7 text-foreground hover:bg-white/90">
+            <Button asChild size="lg" className="rounded-full brand-gradient-bg px-7 text-white hover:opacity-90">
               <Link to="/plans">See plans</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="rounded-full border-white/60 bg-transparent px-7 text-white hover:bg-white/10 hover:text-white">
+            <Button asChild size="lg" className="rounded-full brand-gradient-bg px-7 text-white hover:opacity-90">
               <Link to="/chat">Try the chat</Link>
             </Button>
           </div>
@@ -48,7 +47,7 @@ function Home() {
             {LANGUAGES.map((l) => (
               <span
                 key={l.code}
-                className="rounded-full border border-white/30 bg-white/10 px-3 py-1 text-xs font-medium text-white backdrop-blur"
+                className="rounded-full brand-gradient-bg px-3 py-1 text-xs font-medium text-white shadow-sm"
               >
                 {l.label}
               </span>
@@ -94,8 +93,21 @@ function Home() {
             <Link to="/plans">View subscription plans</Link>
           </Button>
         </div>
+
+        {/* Legal disclaimer */}
+        <div className="mt-16 rounded-2xl border border-border bg-muted/40 p-5 text-xs leading-relaxed text-muted-foreground">
+          <strong className="text-foreground">Disclaimer:</strong> This automated website tool
+          does not provide professional financial or legal advice. All business decisions are
+          made solely at the user's risk, with no guarantees of success or revenue. AI outputs
+          may contain errors, and users must verify all generated content. By paying and using
+          this software, you agree that the platform and its developers hold zero liability for
+          any business losses or financial damages. See our{" "}
+          <Link to="/privacy" className="underline hover:text-foreground">
+            Privacy & Liability Policy
+          </Link>
+          .
+        </div>
       </section>
     </div>
   );
 }
-

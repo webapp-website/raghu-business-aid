@@ -98,6 +98,16 @@ function About() {
             deployment.
           </p>
         </Section>
+
+        <Section title="Disclaimer">
+          <p>
+            This automated website tool does not provide professional financial or legal advice.
+            All business decisions are made solely at the user's risk, with no guarantees of
+            success or revenue. AI outputs may contain errors, and users must verify all
+            generated content. By paying and using this software, you agree that the platform
+            and its developers hold zero liability for any business losses or financial damages.
+          </p>
+        </Section>
       </div>
     </div>
   );
