@@ -65,13 +65,11 @@ function ChatPage() {
     queryKey: ["threads"],
     queryFn: () => listFn(),
     staleTime: 10_000,
-    enabled: subQ.data?.active === true,
   });
 
   const msgsQ = useQuery({
     queryKey: ["thread", threadId],
     queryFn: () => messagesFn({ data: { threadId } }),
-    enabled: subQ.data?.active === true,
   });
 
   const [input, setInput] = useState("");
@@ -160,14 +158,8 @@ function ChatPage() {
     }
   }
 
-  // Subscription gate
-  if (subQ.isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="text-sm text-muted-foreground">Loading…</div>
-      </div>
-    );
-  }
+  // Subscription gate — only show upgrade screen once we KNOW the user has no sub.
+  // Don't block the initial render on the sub query loading.
   if (subQ.data && !subQ.data.active) {
     return (
       <div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6 text-center">
