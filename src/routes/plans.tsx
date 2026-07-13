@@ -36,6 +36,7 @@ function Plans() {
   const [currency, setCurrency] = useState<CurrencyId>("INR");
   const [loading, setLoading] = useState<string | null>(null);
   const [authed, setAuthed] = useState<boolean>(false);
+  const [agreed, setAgreed] = useState<boolean>(false);
   const createOrder = useServerFn(createRazorpayOrder);
   const verify = useServerFn(verifyRazorpayPayment);
   const navigate = useNavigate();
@@ -47,6 +48,10 @@ function Plans() {
   }, []);
 
   async function subscribe(planId: "monthly" | "quarterly" | "premium") {
+    if (!agreed) {
+      toast.error("Please accept the Privacy & Liability Policy to continue.");
+      return;
+    }
     if (!authed) {
       toast.info("Please sign in to subscribe.");
       navigate({ to: "/auth", search: { redirect: "/plans" } as never });
