@@ -167,21 +167,42 @@ function Plans() {
               ))}
             </ul>
             <Button
-              className="mt-8 rounded-full"
+              className="mt-8 rounded-full brand-gradient-bg text-white hover:opacity-90"
               size="lg"
-              variant={p.highlight ? "default" : "outline"}
-              disabled={loading === p.id}
+              disabled={loading === p.id || !agreed}
               onClick={() => subscribe(p.id)}
             >
-              {loading === p.id ? "Opening Razorpay…" : `Subscribe — ${formatPrice(p.amount[currency], currency)}`}
+              {loading === p.id
+                ? "Opening Razorpay…"
+                : !agreed
+                  ? "Accept terms to continue"
+                  : `Subscribe — ${formatPrice(p.amount[currency], currency)}`}
             </Button>
           </div>
         ))}
       </div>
 
-      <p className="mt-10 text-center text-xs text-muted-foreground">
-        Payments are securely processed by Razorpay in your account's live mode
-        (based on the API keys configured on the server).
+      <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-border bg-card p-5">
+        <label className="flex items-start gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            className="mt-1 h-4 w-4 accent-primary"
+          />
+          <span className="text-muted-foreground">
+            I have read and agree to the{" "}
+            <a href="/privacy" className="font-medium text-foreground underline">
+              Privacy &amp; Liability Policy
+            </a>{" "}
+            and understand Launch Business and its developers hold zero liability for any
+            business losses or financial damages resulting from AI-generated suggestions.
+          </span>
+        </label>
+      </div>
+
+      <p className="mt-6 text-center text-xs text-muted-foreground">
+        Payments are securely processed by Razorpay using the API keys configured on the server.
       </p>
 
     </div>
