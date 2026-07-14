@@ -12,12 +12,6 @@ function BrandMark() {
         alt="Launch Business logo"
         className="h-9 w-9 rounded-full object-cover"
       />
-      <div className="flex flex-col leading-none">
-        <span className="text-base font-semibold tracking-tight">Launch Business</span>
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-          with Raghu · AI Consultant
-        </span>
-      </div>
     </div>
   );
 }
@@ -40,10 +34,17 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+      <div className="relative mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="rounded-full">
           <BrandMark />
         </Link>
+
+        <div
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-medium tracking-tight text-foreground"
+          style={{ fontFamily: "'Google Sans', 'Google Sans Text', 'Product Sans', 'Roboto', system-ui, sans-serif" }}
+        >
+          Launch Business
+        </div>
 
         <nav className="hidden items-center gap-1 md:flex">
           {[
