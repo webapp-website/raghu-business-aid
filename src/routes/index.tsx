@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LANGUAGES } from "@/lib/constants";
-void LANGUAGES;
 import { Button } from "@/components/ui/button";
+
+const googleSans = {
+  fontFamily:
+    "'Google Sans', 'Google Sans Text', 'Product Sans', 'Roboto', system-ui, sans-serif",
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -20,42 +23,42 @@ export const Route = createFileRoute("/")({
 function Home() {
   return (
     <div className="bg-background">
-      {/* Hero — plain background, colorful buttons */}
+      {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-20 pt-16 text-center sm:px-6 sm:pt-24">
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-medium text-muted-foreground">
             <span className="h-2 w-2 rounded-full brand-gradient-bg" />
             AI-powered business consulting
           </span>
-          <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
+          <h1
+            className="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl"
+            style={googleSans}
+          >
             Meet <span className="brand-gradient-text">Raghu</span>, your AI business consultant.
           </h1>
-          <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-            Raghu asks the right questions, analyzes photos of your store, product or layout,
-            and generates visual and text-based suggestions to help you launch and grow — in
-            English, తెలుగు, हिंदी, தமிழ் and മലയാളം.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Button asChild size="lg" className="rounded-full brand-gradient-bg px-7 text-white hover:opacity-90">
-              <Link to="/plans">See plans</Link>
-            </Button>
-            <Button asChild size="lg" className="rounded-full brand-gradient-bg px-7 text-white hover:opacity-90">
-              <Link to="/chat">Try the chat</Link>
+
+          <div className="mt-10">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full brand-gradient-bg px-12 py-7 text-lg font-medium text-white shadow-lg hover:opacity-90"
+            >
+              <Link to="/chat" preload="intent" style={googleSans}>
+                Get started
+              </Link>
             </Button>
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-2">
-            {LANGUAGES.map((l) => (
-              <span
-                key={l.code}
-                className="rounded-full brand-gradient-bg px-3 py-1 text-xs font-medium text-white shadow-sm"
-              >
-                {l.label}
-              </span>
-            ))}
-          </div>
+          <p
+            className="mt-8 max-w-2xl text-base text-muted-foreground"
+            style={googleSans}
+          >
+            Raghu asks the right questions, analyzes your store photos, and generates visual
+            suggestions to help you grow.
+          </p>
         </div>
       </section>
+
 
       {/* Features */}
       <section className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
