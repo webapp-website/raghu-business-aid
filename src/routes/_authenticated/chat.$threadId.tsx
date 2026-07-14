@@ -37,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import brandOrb from "@/assets/brand-orb.png.asset.json";
+const brandOrb = { url: "/brand-orb.png" };
 
 export const Route = createFileRoute("/_authenticated/chat/$threadId")({
   component: ChatPage,
