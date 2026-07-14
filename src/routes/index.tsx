@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LANGUAGES } from "@/lib/constants";
+void LANGUAGES;
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
