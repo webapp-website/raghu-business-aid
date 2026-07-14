@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import logoAsset from "@/assets/launch-business-logo.png.asset.json";
+const logoAsset = { url: "/launch-business-logo.png" };
 
 function BrandMark() {
   return (
