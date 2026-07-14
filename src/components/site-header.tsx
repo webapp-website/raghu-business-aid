@@ -12,12 +12,6 @@ function BrandMark() {
         alt="Launch Business logo"
         className="h-9 w-9 rounded-full object-cover"
       />
-      <div className="flex flex-col leading-none">
-        <span className="text-base font-semibold tracking-tight">Launch Business</span>
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-          with Raghu · AI Consultant
-        </span>
-      </div>
     </div>
   );
 }
